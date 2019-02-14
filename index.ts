@@ -1,9 +1,10 @@
 import { Project } from "ts-morph";
 import { writeFileSync, mkdirSync } from 'fs'
 import * as config from './config'
-
+import {join} from 'path'
+const sharedFolder = join(process.cwd(),'/shared')
 const startGenerator = () => {
-    import(config.sharedFolder).then(models => {
+    import(sharedFolder).then(models => {
 
         // Create the client folder with http service file
         mkdirSync(config.clientPath, { recursive: true });

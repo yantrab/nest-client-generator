@@ -4,7 +4,6 @@ export const decorators = {
     Get: "return new Promise((resolve) => get('rest/{url}').then((data:any) => {resolve}))",
     Post: "return new Promise((resolve) => post('rest/{url}',{body}).then((data:any) => {resolve}))"
 }
-export const sharedFolder = process.cwd() + '/shared'
 export const httpServiceTemplate = `
     function handleErrors(response) {
         if (!response.ok) {

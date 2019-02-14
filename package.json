@@ -1,6 +1,6 @@
 {
   "name": "nest-client-generator",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "generate client api diractly from controller files, with ts-morph .",
    "main": "lib/index.js",
    "types" : "lib/index.d.ts",
@@ -22,9 +22,11 @@
   },
   "author": "Yaniv Trabelsi <yantrab@gmail.com>",
   "license": "ISC",
+  "dependencies": {
+    "ts-morph": "^1.0.0"
+  },
   "devDependencies": {
     "@types/node": "^10.12.24",
-    "ts-morph": "^1.0.0",
     "ts-node": "^8.0.2",
     "typescript": "^3.3.1"
   }

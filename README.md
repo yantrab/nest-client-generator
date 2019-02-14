@@ -9,7 +9,7 @@ npm i nest-client-generator
 ## Usage
 Add script:
 ```
-"gen-client":"npm run nest-client-generator"
+ "gen-client": "node  ./node_modules/nest-client-generator/lib/index.js"
 ```
 and then run
 ```sh

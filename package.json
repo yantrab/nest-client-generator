@@ -1,0 +1,30 @@
+{
+  "name": "nest-client-generator",
+  "version": "0.0.1",
+  "description": "generate client api diractly from controller files, with ts-morph .",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "gen-client": "npm run nest-client-generator"
+  },
+  "keywords": [
+    "nest",
+    "express",
+    "client generator"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yantrab/nest-client-generator"
+  },
+  "bugs": {
+    "url": "https://github.com/yantrab/nest-client-generator/issues"
+  },
+  "author": "Yaniv Trabelsi <yantrab@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^10.12.24",
+    "ts-morph": "^1.0.0",
+    "ts-node": "^8.0.2",
+    "typescript": "^3.3.1"
+  }
+}

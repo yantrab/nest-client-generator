@@ -2,7 +2,7 @@ import { Project } from "ts-morph";
 import { writeFileSync, mkdirSync } from 'fs'
 import * as config from './config'
 import {join} from 'path'
-const sharedFolder = join(process.cwd(),'/shared')
+const sharedFolder = join(process.cwd() + '/shared/dist')
 const startGenerator = () => {
     import(sharedFolder).then(models => {
 

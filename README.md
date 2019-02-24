@@ -60,3 +60,6 @@ export class AuthController {
     }
 }
 ```
+
+## working example
+https://github.com/yantrab/nest-angular

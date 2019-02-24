@@ -1,29 +1,42 @@
-import { Project } from "ts-morph";
+import { Project , Scope} from "ts-morph";
 import { writeFileSync, mkdirSync } from 'fs'
-import * as config from './config'
-import {join} from 'path'
-const sharedFolder = join(process.cwd() + '/shared/dist')
-const startGenerator = () => {
+import * as defualtConfig from './config'
+const sharedFolder = '../shared'
+import {resolve} from 'path'
+export const startGenerateClientApi = (config = defualtConfig) => {
+    const clientPath = resolve(config.clientPath)
+    const serverPath = resolve(config.serverPath)
     import(sharedFolder).then(models => {
 
         // Create the client folder with http service file
-        mkdirSync(config.clientPath, { recursive: true });
-        writeFileSync(config.clientPath + '/http.service.ts', config.httpServiceTemplate);
+        mkdirSync(clientPath, { recursive: true });
+        writeFileSync(clientPath + '/http.service.ts', config.httpServiceTemplate);
 
         const project = new Project();
-        const files = project.addExistingSourceFiles("./server/src/**/*controller.ts");
+        const files = project.addExistingSourceFiles(serverPath + "/**/*controller.ts");
 
         files.forEach(file => {
             const c = file.getClasses()[0];
-            const controllerDecorator = c.getDecorator('Controller');
-            const basePath = controllerDecorator.getArguments()[0].compilerNode.getText().replace(/'/g, '')
-            controllerDecorator.remove();
+            const basePath = c.getDecorator('Controller').getArguments()[0].compilerNode.getText().replace(/'/g, '')
+
+            // Remove all class Decorators & add Indectable decorator
+            c.getDecorators().forEach(d => d.remove());
+            c.addDecorator({ name: 'Injectable',arguments:[] })
+
+            // Remove class constrctors & add one with di injectable
+            c.getConstructors().forEach(constructor => constructor.remove())
+            c.addConstructor({ parameters: [{ isReadonly: true, type: 'APIService', name: 'api', scope: Scope.Private}] })
+
+            // Remove all imports but 'shared'
             file.getImportDeclarations().forEach(i => {
                 if (!i.getChildren().find(c => c.getFullText().includes('shared'))) i.remove()
             })
 
+            // Add necessary imports
             file.addImportDeclaration({ namedImports: ['plainToClass'], moduleSpecifier: 'class-transformer' })
-            file.addImportDeclaration({ namedImports: ['get', 'post'], moduleSpecifier: './http.service' })
+            file.addImportDeclaration({ namedImports: ['APIService'], moduleSpecifier: './http.service' })
+            file.addImportDeclaration({ namedImports: ['Injectable'], moduleSpecifier: '@angular/core' })
+
             const methods = c.getMethods()
             methods.forEach(method => {
                 let replacment;
@@ -33,11 +46,12 @@ const startGenerator = () => {
                 method.getDecorators().forEach(d => {
                     const name = d.getName()
                     if (!config.decorators[name]) return d.remove()
-                    const methodPath = d.getArguments()[0].compilerNode.getText().replace(/'/g, '')
+                    const args = d.getArguments()
+                    const methodPath = args[0] ? args[0].compilerNode.getText().replace(/'/g, '') : ''
                     replacment =
                         config.decorators[name]
                             .replace('{url}', basePath + '/' + methodPath)
-                            .replace('{body}', method.getParameters().map(p => p.compilerNode.name.getText()).join(', '))
+                            .replace('{body}', method.getParameters().filter(p => p.getDecorators().find(d => d.getName() == 'Body')).map(p => p.compilerNode.name.getText()).join(', '))
                     d.remove()
                 })
 
@@ -57,5 +71,3 @@ const startGenerator = () => {
         })
     })
 }
-
-startGenerator();

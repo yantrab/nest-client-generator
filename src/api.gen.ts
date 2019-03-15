@@ -2,13 +2,11 @@ import { Project, Scope } from 'ts-morph';
 import { writeFileSync, mkdirSync } from 'fs';
 import * as defualtConfig from './config';
 import { resolve } from 'path';
-const sharedFolder = resolve('../shared');
-
-import { exec } from 'child_process'
-
 export const startGenerateClientApi = (config = defualtConfig) => {
     const clientPath = resolve(config.clientPath);
     const serverPath = resolve(config.serverPath);
+    const sharedFolder = resolve(config.modelsPath);
+
     import(sharedFolder).then(models => {
 
         // Create the client folder with http service file
@@ -90,9 +88,5 @@ export const startGenerateClientApi = (config = defualtConfig) => {
             const out = poly ? `import * as models from 'shared';\n` : '';
             writeFileSync('client/src/api/' + file.getBaseName(), out + file.getText());
         });
-    });
-    exec('cd client&&ng lint --fix', function callback(error, stdout, stderr) {
-        // tslint:disable-next-line: no-console
-        console.log(error + stdout + stderr);
     });
 };

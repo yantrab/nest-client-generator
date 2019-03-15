@@ -1,8 +1,8 @@
 import { Project, Scope } from 'ts-morph';
 import { writeFileSync, mkdirSync } from 'fs';
 import * as defualtConfig from './config';
-const sharedFolder = '../shared';
 import { resolve } from 'path';
+const sharedFolder = resolve('../shared');
 
 import { exec } from 'child_process'
 

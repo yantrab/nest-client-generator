@@ -1,4 +1,4 @@
-import { Project, Scope } from 'ts-morph';
+import { Project, Scope, SyntaxKind } from 'ts-morph';
 import { writeFileSync, mkdirSync } from 'fs';
 import * as defualtConfig from './config';
 import { resolve } from 'path';
@@ -20,6 +20,7 @@ export const startGenerateClientApi = (config = defualtConfig) => {
             let poly = false;
             const c = file.getClasses()[0];
             const basePath = c.getDecorator('Controller').getArguments()[0].compilerNode.getText().replace(/'/g, '');
+            // file.getStatements().forEach(statement => statement.remove());
 
             // Remove all class Decorators & add Indectable decorator
             c.getDecorators().forEach(d => d.remove());
@@ -29,10 +30,10 @@ export const startGenerateClientApi = (config = defualtConfig) => {
             c.getConstructors().forEach(constructor => constructor.remove());
             c.addConstructor({ parameters: [{ isReadonly: true, type: 'APIService', name: 'api', scope: Scope.Private }] });
 
-            // Remove all imports but 'shared'
-            file.getImportDeclarations().forEach(i => {
-                if (!i.getChildren().find(child => child.getFullText().includes('shared'))) { i.remove(); }
-            });
+            // // Remove all imports but 'shared'
+            // file.getImportDeclarations().forEach(i => {
+            //     if (!i.getChildren().find(child => child.getFullText().includes('shared'))) { i.remove(); }
+            // });
 
             // Add necessary imports
             file.addImportDeclaration({ namedImports: ['APIService'], moduleSpecifier: './http.service' });
@@ -66,6 +67,7 @@ export const startGenerateClientApi = (config = defualtConfig) => {
 
                 const implementation = method.getImplementation();
                 const type = method.getReturnTypeNode().getText().replace('Promise<', '').replace('>', '');
+                method.setReturnType(`Promise<${type}>`)
                 const isArray = type.includes('[]');
                 let resolver = 'resolve(data)';
                 if (isArray) {
@@ -84,7 +86,13 @@ export const startGenerateClientApi = (config = defualtConfig) => {
                 replacment = replacment.replace('{resolve}', resolver);
                 implementation.setBodyText(replacment);
             });
-
+            for (const parameter of file.getDescendantsOfKind(SyntaxKind.Parameter)) {
+                if (parameter.findReferencesAsNodes().length === 0)
+                    parameter.remove();
+            }
+            file.fixMissingImports()
+                .organizeImports()
+                .formatText();
             const out = poly ? `import * as models from 'shared';\n` : '';
             writeFileSync('client/src/api/' + file.getBaseName(), out + file.getText());
         });

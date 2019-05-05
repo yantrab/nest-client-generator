@@ -54,7 +54,7 @@ export const startGenerateClientApi = (config = defualtConfig) => {
                         .filter(p => p.getDecorators().find(d => d.getName() === 'Body')).map(p => p.compilerNode.name.getText()).join(', ');
                     replacment =
                         config.decorators[name]
-                            .replace('{url}', basePath + + (methodPath ? ('/' + methodPath) : ''))
+                            .replace('{url}', basePath + (methodPath ? ('/' + methodPath) : ''))
                             .replace('{body}', body ? ', ' + body : '');
                     d.remove();
                 });

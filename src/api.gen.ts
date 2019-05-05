@@ -50,7 +50,7 @@ export const startGenerateClientApi = (config = defualtConfig) => {
                     const methodPath = args[0] ? args[0].compilerNode.getText().replace(/'/g, '') : ''
                     replacment =
                         config.decorators[name]
-                            .replace('{url}', basePath + '/' + methodPath)
+                            .replace('{url}', basePath + (methodPath ? ('/' + methodPath) : ''))
                             .replace('{body}', method.getParameters().filter(p => p.getDecorators().find(d => d.getName() == 'Body')).map(p => p.compilerNode.name.getText()).join(', '))
                     d.remove()
                 })

@@ -87,3 +87,4 @@ To using the same path for your models, add it to paths in tsconfig:
             "shared/*": ["../../shared/*"]
         }
 ```
+[working example](https://github.com/yantrab/nest-angular/blob/master/generator/index.ts) 

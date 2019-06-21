@@ -4,7 +4,7 @@ Generate client api directly from nest controller.
 ### Install
 npm i nest-client-generator
 
-### Use (angular)
+### Use
 create generator file:
 ```typescript
 import { startGenerateClientApi } from 'nest-client-generator';

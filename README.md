@@ -79,7 +79,7 @@ export class AuthController {
 
 ```
 
-To using the same path for your models, add it to paths in tsconfig:
+To using the same path for your models, add it to tsconfig:
 ```
         "baseUrl": "./src",
         "paths": {

@@ -2,7 +2,8 @@ import { mkdirSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
 import { Project, Scope, SyntaxKind } from 'ts-morph';
 import * as defualtConfig from './config';
-export const startGenerateClientApi = (config = defualtConfig) => {
+import { Config } from './config.interface';
+export const startGenerateClientApi = (config: Config = defualtConfig) => {
     const clientPath = resolve(config.clientPath);
     const serverPath = resolve(config.serverPath);
     mkdirSync(clientPath, { recursive: true });

@@ -1,5 +1,5 @@
 # nest-client-generator
-Generate client api directly from nest controller.
+Generate client api directly from [nest](https://nestjs.com/) controller.
 
 ### Install
 npm i nest-client-generator

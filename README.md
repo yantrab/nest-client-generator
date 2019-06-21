@@ -16,39 +16,65 @@ add to scripts:
 run
 ``` npm run gen-client```
 
-### Exmple
+### Example (angular)
 server controller :
 ```typescript
-import { Controller, Get } from '@nestjs/common';
-import { TadorService } from './tador.service';
-import { ReqUser } from '../decorators/user.decorator';
-import { User } from 'shared/models';
-import { Panel } from 'shared/models/tador/tador.model';
+import { Controller, Post, Get, Body, Req, UseInterceptors } from '@nestjs/common';
+import { LoginRequest, User, signinRequest } from 'shared';
+import { UserService } from 'services/user.service';
+import { LoginInterceptor, GetUserAuthenticatedInterceptor } from '../middlewares/login.middleware';
+import { ReqUser } from 'decorators/user.decorator';
 
-@Controller('admin')
-export class AdminController {
-    constructor(private service: TadorService) {}
+@Controller('rest/auth')
+export class AuthController {
+    constructor(private readonly authService: UserService) {}
 
-    @Get('initialData')
-    async initialData(@ReqUser() user: User): Promise<Panel[]> {
-        return this.service.panelRepo.findMany({ userId: user.id });
+    @Post('login')
+    @UseInterceptors(LoginInterceptor)
+    async login(@Body() user: LoginRequest): Promise<User> {
+        return this.authService.validateUser(user.email, user.password);
+    }
+
+    @Post('signin')
+    async signin(@Body() user: signinRequest): Promise<any> {
+        return this.authService.changePassword(user);
+    }
+
+    @UseInterceptors(GetUserAuthenticatedInterceptor)
+    @Get('getUserAuthenticated')
+    async getUserAuthenticated(@ReqUser() user: User): Promise<User> {
+        return user;
     }
 }
+
 ```
 client generated file:
 ```typescript
 import { Injectable } from '@angular/core';
-import { Panel } from 'shared/models/tador/tador.model';
+import { LoginRequest, signinRequest, User } from 'shared';
 import { APIService } from './http.service';
 
 @Injectable()
-export class AdminController {
-    async initialData(): Promise<Panel[]> {
+export class AuthController {
+    async login(user: LoginRequest): Promise<User> {
         return new Promise(resolve => {
-            this.api.get('admin/initialData').subscribe((data: any) => resolve(data.map(d => new Panel(d))));
+            this.api.post('rest/auth/login', user).subscribe((data: any) => resolve(new User(data)));
+        });
+    }
+
+    async signin(user: signinRequest): Promise<any> {
+        return new Promise(resolve => {
+            this.api.post('rest/auth/signin', user).subscribe((data: any) => resolve(data));
+        });
+    }
+
+    async getUserAuthenticated(): Promise<User> {
+        return new Promise(resolve => {
+            this.api.get('rest/auth/getUserAuthenticated').subscribe((data: any) => resolve(new User(data)));
         });
     }
 
     constructor(private readonly api: APIService) {}
 }
+
 ```

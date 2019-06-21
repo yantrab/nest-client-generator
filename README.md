@@ -7,8 +7,8 @@ npm i nest-client-generator
 ### Use
 create generator file:
 ```typescript
-import { startGenerateClientApi } from 'nest-client-generator';
-startGenerateClientApi({ clientPath, decorators, httpServiceTemplate, serverPath });
+import { generateClientApi } from 'nest-client-generator';
+generateClientApi({ clientPath, decorators, httpServiceTemplate, serverPath });
 ```
 add to scripts:
 ```"gen-client": "ts-node ./generator && prettier --write \"./client/src/api/**/*.ts\"",```

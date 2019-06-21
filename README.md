@@ -78,3 +78,12 @@ export class AuthController {
 }
 
 ```
+
+To using the same path for your models, add it to paths in tsconfig:
+```
+        "baseUrl": "./src",
+        "paths": {
+            "shared": ["../../shared"],
+            "shared/*": ["../../shared/*"]
+        }
+```

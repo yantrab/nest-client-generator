@@ -64,7 +64,7 @@ export const startGenerateClientApi = (config: Config = defualtConfig) => {
                     .replace('>', '');
                 method.setReturnType(`Promise<${type}>`);
 
-                if (type != 'any') {
+                if (type !== 'any' && !type.includes('{')) {
                     const isArray = type.includes('[]');
                     if (isArray) {
                         const arrayType = type.replace('[]', '');

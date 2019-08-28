@@ -1,23 +1,30 @@
 # nest-client-generator
+
 Generate client api directly from [nest](https://nestjs.com/) controller.
 
 ### Install
+
 npm i nest-client-generator
 
 ### Use
+
 create generator file:
+
 ```typescript
 import { generateClientApi } from 'nest-client-generator';
 generateClientApi({ clientPath, decorators, httpServiceTemplate, serverPath });
 ```
+
 add to scripts:
-```"gen-client": "ts-node ./generator && prettier --write \"./client/src/api/**/*.ts\"",```
+`"gen-client": "ts-node ./generator && prettier --write \"./client/src/api/**/*.ts\"",`
 
 run
-``` npm run gen-client```
+`npm run gen-client`
 
 ### Example (angular)
+
 server controller :
+
 ```typescript
 import { Controller, Post, Get, Body, Req, UseInterceptors } from '@nestjs/common';
 import { LoginRequest, User, signinRequest } from 'shared';
@@ -31,8 +38,8 @@ export class AuthController {
 
     @Post('login')
     @UseInterceptors(LoginInterceptor)
-    async login(@Body() user: LoginRequest): Promise<User> {
-        return this.authService.validateUser(user.email, user.password);
+    async login(@Body() user: LoginRequest): Promise<{ status: number }> {
+        return this.authService.validateUser(user.email, user.password) as any;
     }
 
     @Post('signin')
@@ -46,9 +53,10 @@ export class AuthController {
         return user;
     }
 }
-
 ```
+
 client generated file:
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { LoginRequest, signinRequest, User } from 'shared';
@@ -56,9 +64,9 @@ import { APIService } from './http.service';
 
 @Injectable()
 export class AuthController {
-    async login(user: LoginRequest): Promise<User> {
+    async login(user: LoginRequest): Promise<{ status: number }> {
         return new Promise(resolve => {
-            this.api.post('rest/auth/login', user).subscribe((data: any) => resolve(new User(data)));
+            this.api.post('rest/auth/login', user).subscribe((data: any) => resolve(data));
         });
     }
 
@@ -77,9 +85,12 @@ export class AuthController {
     constructor(private readonly api: APIService) {}
 }
 
+}
+
 ```
 
 To using the same path for your models, add it to tsconfig:
+
 ```
         "baseUrl": "./src",
         "paths": {
@@ -87,4 +98,5 @@ To using the same path for your models, add it to tsconfig:
             "shared/*": ["../../shared/*"]
         }
 ```
-[working example](https://github.com/yantrab/nest-angular/blob/master/generator/index.ts) 
+
+[working example](https://github.com/yantrab/nest-angular/blob/master/generator/index.ts)
